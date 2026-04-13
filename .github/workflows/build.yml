@@ -14,13 +14,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check jni folder
+        run: ls -la $GITHUB_WORKSPACE/jni/
+
       - name: Build with ndk-build
         run: |
           NDK_PATH=$(ls -d $ANDROID_SDK_ROOT/ndk/* | sort -V | tail -1)
+          echo "NDK: $NDK_PATH"
+          echo "Workspace: $GITHUB_WORKSPACE"
+          ls $GITHUB_WORKSPACE/jni/
           $NDK_PATH/ndk-build \
             NDK_PROJECT_PATH=$GITHUB_WORKSPACE \
             APP_BUILD_SCRIPT=$GITHUB_WORKSPACE/jni/Android.mk \
-            NDK_APPLICATION_MK=$GITHUB_WORKSPACE/jni/Application.mk
+            NDK_APPLICATION_MK=$GITHUB_WORKSPACE/jni/Application.mk \
+            APP_PLATFORM=android-21
 
       - name: Upload .so artifact
         uses: actions/upload-artifact@v4
