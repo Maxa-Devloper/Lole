@@ -14,18 +14,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Android NDK
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r25c          # yoki r26d, r27
-          add-to-path: true
-
       - name: Build with ndk-build
         run: |
-          ndk-build \
-            NDK_PROJECT_PATH=. \
-            APP_BUILD_SCRIPT=jni/Android.mk \
-            NDK_APPLICATION_MK=jni/Application.mk
+          NDK_PATH=$(ls -d $ANDROID_SDK_ROOT/ndk/* | sort -V | tail -1)
+          $NDK_PATH/ndk-build \
+            NDK_PROJECT_PATH=$GITHUB_WORKSPACE \
+            APP_BUILD_SCRIPT=$GITHUB_WORKSPACE/jni/Android.mk \
+            NDK_APPLICATION_MK=$GITHUB_WORKSPACE/jni/Application.mk
 
       - name: Upload .so artifact
         uses: actions/upload-artifact@v4
