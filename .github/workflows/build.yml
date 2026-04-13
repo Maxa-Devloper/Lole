@@ -1,0 +1,34 @@
+name: Build Android NDK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r25c          # yoki r26d, r27
+          add-to-path: true
+
+      - name: Build with ndk-build
+        run: |
+          ndk-build \
+            NDK_PROJECT_PATH=. \
+            APP_BUILD_SCRIPT=jni/Android.mk \
+            NDK_APPLICATION_MK=jni/Application.mk
+
+      - name: Upload .so artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-so
+          path: libs/**/*.so
